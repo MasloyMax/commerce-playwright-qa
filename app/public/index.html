@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Field Supply · QA lab</title><link rel="stylesheet" href="/styles.css"><script src="/app.js" type="module"></script></head>
+<body>
+<header><a class="brand" href="/">FIELD<span>SUPPLY</span></a><span class="badge">LOCAL DEMO STORE</span><button id="logout" hidden>Sign out</button></header>
+<main>
+  <section id="login-view" aria-labelledby="login-heading">
+    <p class="eyebrow">EVERYDAY ESSENTIALS / CAREFULLY CHOSEN</p>
+    <h1 id="login-heading">Good tools.<br>Better days.</h1>
+    <p class="intro">A small collection for your desk, your focus, and everything in between.</p>
+    <form id="login-form" novalidate>
+      <h2>Welcome back</h2>
+      <label>Email<input name="email" type="email" autocomplete="username" value="demo@example.test"></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" value="Demo-pass-123"></label>
+      <button class="primary" type="submit">Sign in</button>
+      <p id="login-error" role="alert"></p>
+      <p class="hint">Demo credentials are prefilled. No real purchases.</p>
+    </form>
+  </section>
+  <section id="store-view" hidden>
+    <p class="eyebrow">THE WORKSPACE COLLECTION</p>
+    <h1>Make room<br>for focus.</h1>
+    <p class="intro">Thoughtful essentials. Nothing extra.</p>
+    <div class="store-grid">
+      <section aria-label="Catalog">
+        <div class="toolbar">
+          <label>Search products<input id="search" type="search" placeholder="Find your next essential"></label>
+          <label>Sort products<select id="sort"><option value="name">Name</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label>
+        </div>
+        <p id="catalog-error" role="alert"></p><button id="retry" hidden>Retry catalog</button>
+        <div id="products" class="products"></div><p id="no-results" hidden>No products found</p>
+      </section>
+      <aside aria-label="Shopping cart">
+        <h2>Your selection</h2><div id="cart-items"></div>
+        <div class="total"><span>Total</span><strong id="cart-total" data-testid="cart-total">$0.00</strong></div>
+        <form id="checkout-form" novalidate>
+          <label>Full name<input name="name" autocomplete="name"></label>
+          <label>Delivery address<input name="address" autocomplete="street-address"></label>
+          <button class="primary" id="checkout" type="submit">Place order</button>
+        </form>
+        <p id="cart-error" role="alert"></p>
+        <section id="confirmation" hidden aria-label="Order confirmation"><h3>Order confirmed</h3><p>Thank you. Your workspace upgrade is on its way.</p><p id="order-id" data-testid="order-id"></p></section>
+      </aside>
+    </div>
+  </section>
+</main><footer>FIELD SUPPLY <span>A reproducible test application · Synthetic data only</span></footer>
+</body></html>

@@ -1,0 +1,27 @@
+{
+  "name": "commerce-playwright-qa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A reproducible e-commerce QA portfolio with Playwright, TypeScript and a local HTTP fixture.",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "start": "node app/server.mjs",
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && node --check app/server.mjs && node --check app/public/app.js",
+    "browsers:install": "playwright install chromium firefox",
+    "demo:capture": "node docs/capture-demo.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@axe-core/playwright": "4.10.2",
+    "@types/node": "24.10.0",
+    "typescript": "5.9.3"
+  }
+}
