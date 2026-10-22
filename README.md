@@ -37,7 +37,9 @@ Demo sign-in is prefilled: `demo@example.test` / `Demo-pass-123`. All products, 
 ## What this demonstrates
 
 - **22 scenarios × 3 configurations:** Chromium, Firefox and a mobile Chromium viewport.
-- Composition-based Page/Component Objects and injected Playwright fixtures.
+- Page/Component Objects with explicit `open()` methods and injected Playwright fixtures.
+- Russian scenario and hook titles, with stable test IDs and `@smoke` tags.
+- Explicit `beforeEach` setup and `afterEach` session cleanup; Playwright owns page/context teardown and worker-level browser shutdown.
 - API-based setup with browser-context cookie isolation; UI authentication tested separately.
 - Order verification through the API after completing the UI journey.
 - Server-side totals, cart boundaries, negative paths, and isolated sessions.
@@ -50,7 +52,7 @@ Demo sign-in is prefilled: `demo@example.test` / `Demo-pass-123`. All products, 
 ```text
 tests/specs/       business scenarios and assertions
 tests/pages/       user actions and component locators
-tests/fixtures.ts  authentication and dependency lifecycle
+tests/fixtures.ts  object injection and additional context lifecycle
 tests/data/        deterministic synthetic data
 tests/support/     API setup and post-condition helper
 app/               local application under test

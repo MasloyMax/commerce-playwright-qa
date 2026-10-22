@@ -21,11 +21,17 @@ flowchart TD
 
 ## ADR 002 — Composition and explicit fixtures
 
-**Decision:** StorePage owns CartComponent; Playwright injects page, API helper and authentication.
+**Decision:** StorePage owns CartComponent; Playwright injects page objects and the API helper. `LoginPage.open()` and `StorePage.open()` navigate and wait for their respective views. Spec-level `beforeEach` hooks explicitly prepare authentication and open the required page.
 **Reason:** the cart has its own controls and locators. Composition avoids an inheritance tree and a catch-all BasePage.
 **Boundary:** page objects perform actions; scenario files express expected business behavior. StoreApi checks setup preconditions so broken preparation fails immediately.
 
-Authentication uses `page.request`, sharing cookies with exactly one browser context. Each login creates an independent server-side session. Teardown logs that session out. Tests of login itself use an unauthenticated page. The second context in the isolation test is explicitly closed.
+Authentication uses `context.request`, sharing cookies with exactly one browser context. The `api` fixture does not log in implicitly, and page-object construction does not navigate. Tests of login itself open an unauthenticated page. UI selectors and interactions live in page/component objects; network interception and axe analysis remain in the specs.
+
+Each spec registers an `afterEach` hook that logs out the current session, including sessions created through the UI. Logout accepts HTTP 200 or 401 because anonymous and already-signed-out scenarios have no active session. Other cleanup failures fail the test. Registering the hook in every spec avoids relying on a shared module's import-time hook registration.
+
+Playwright's built-in fixtures close the test's pages and browser context after the hooks, including on failure, and preserve configured failure artifacts. The browser is shared within a worker and closes when that worker finishes; calling `browser.close()` in `afterEach` would break subsequent tests in that worker. See the [official fixture lifecycle](https://playwright.dev/docs/test-fixtures#execution-order).
+
+The `secondSessionApi` fixture owns the manually created context used by CART-05. Its teardown logs out that session and closes the context in nested `finally` blocks, so a logout failure cannot skip context closure. `StorePage.open()` waits for the store view rather than successful catalog loading, allowing RES-01 to exercise the unavailable-catalog state.
 
 ## ADR 003 — Diagnostics without hidden retries
 

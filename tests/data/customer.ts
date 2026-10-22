@@ -1,4 +1,7 @@
 export const demoUser = { email: 'demo@example.test', password: 'Demo-pass-123' } as const;
-export function customer(overrides: Partial<{ name: string; address: string }> = {}) {
+
+export type Customer = { name: string; address: string };
+
+export function customer(overrides: Partial<Customer> = {}): Customer {
   return { name: 'Alex Example', address: '42 Test Street', ...overrides };
 }

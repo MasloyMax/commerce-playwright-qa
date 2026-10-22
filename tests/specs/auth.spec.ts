@@ -1,21 +1,48 @@
 import { test, expect } from '../fixtures.js';
-test('AUTH-01 @smoke signs in through the UI', async ({ login, page }) => {
-  await login.open(); await login.signIn();
-  await expect(page.getByRole('heading', { name: 'Make room for focus.' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+import { customer, demoUser } from '../data/customer.js';
+
+test.afterEach('Завершить сессию пользователя', async ({ api }) => {
+  await api.logout();
 });
-test('AUTH-02 rejects incorrect credentials', async ({ login, page }) => {
-  await login.open(); await login.signIn('demo@example.test', 'incorrect');
-  await expect(page.getByRole('alert').filter({ hasText: 'Incorrect email or password' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sign out' })).toBeHidden();
+
+test.describe('Вход в аккаунт', () => {
+  test.beforeEach('Открыть страницу входа', async ({ login }) => {
+    await login.open();
+  });
+
+  test('AUTH-01 @smoke Пользователь входит с правильным email и паролем', async ({ login, store }) => {
+    await login.signIn();
+
+    await expect(store.heading).toBeVisible();
+    await expect(store.signOutButton).toBeVisible();
+  });
+
+  test('AUTH-02 Неверный пароль вызывает ошибку и не даёт войти', async ({ login, store }) => {
+    await login.signIn(demoUser.email, 'incorrect');
+
+    await expect(login.error).toHaveText('Incorrect email or password');
+    await expect(store.signOutButton).toBeHidden();
+  });
 });
-test('AUTH-03 signing out invalidates the server session', async ({ store, page }) => {
-  await expect(store.cart.total).toHaveText('$0.00');
-  await page.getByRole('button', { name: 'Sign out' }).click();
-  await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
-  expect((await page.request.get('/api/cart')).status()).toBe(401);
+
+test.describe('Выход из аккаунта', () => {
+  test.beforeEach('Авторизоваться через API и открыть магазин', async ({ api, store }) => {
+    await api.login();
+    await store.open();
+  });
+
+  test('AUTH-03 После выхода сессия больше не даёт доступ к корзине', async ({ store, login, api }) => {
+    await expect(store.cart.total).toHaveText('$0.00');
+
+    await store.signOut();
+
+    await expect(login.signInButton).toBeVisible();
+    expect((await api.cart()).status()).toBe(401);
+  });
 });
-test('AUTH-04 anonymous requests cannot create orders', async ({ request }) => {
-  const response = await request.post('/api/orders', { data: { name: 'Alex Example', address: '42 Test Street' } });
+
+test('AUTH-04 Гость не может оформить заказ через API', async ({ api }) => {
+  const response = await api.createOrder(customer());
+
   expect(response.status()).toBe(401);
 });
